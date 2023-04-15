@@ -1,0 +1,23 @@
+<div id="demo"></div>
+</div>
+<script>
+   async function load(){
+    let tmp= await loadDoc();
+    console.log(tmp,'sdf');
+   }
+   load();
+   
+function loadDoc() {
+    return new Promise((res,rej)=>{
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "http://localhost/expense_app/apifile.php?userId=3214654",true);
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                res(xhttp.responseText);
+            }
+        }
+        xhttp.send();
+    })
+
+}
+</script>

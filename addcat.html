@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>categoryList</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+      <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   </head>
+   <script>
+    window.addEventListener("load", function(){
+        let user=localStorage.getItem('userId');
+          if(!user ||  user==undefined){
+              setTimeout(()=>{
+                  window.location.assign('./login.php');
+              },100);
+          }
+        var userId=localStorage.getItem('userId');
+        document.querySelector('#userId').setAttribute('value',userId);
+    })
+   </script>
+   <body>
+      <center>
+         <h1>add Form data in Database</h1>
+      </center>
+      <div class="container">
+        <div class="row">
+            <div class="col-md-4 ">
+    
+            </div>
+            <div class="col-md-4 col-sm-12">
+               <form action="update.php" method="post">
+                  <div class="form-group">
+                  <label for="category" >Category:</label>
+                  <input type="text" name="category" id="category"  class="form-control">
+                  <input type="text" name="userId" id="userId"  class="form-control" style="visibility: hidden;">  
+                </div>
+    
+                  <button type="submit" class="btn btn-default">Submit</button>
+               </form>
+               <br>
+               <a href='./' class="btn btn-default">Home</a>
+            </div>
+         </div>
+      </div>
+
+   </body>

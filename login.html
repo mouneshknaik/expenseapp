@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<html lang="en">
+   <head>
+    <style>
+        .success{
+            color: green;
+            font-size: 20px;
+        }
+        .error{
+            color: red;
+            font-size: 20px;
+        }
+    </style>
+   </head>
+   <script>
+    window.addEventListener("load", async function(){
+
+    });
+    async function loginAPI(){
+        let pass=document.querySelector('#password').value;
+        let phone=document.querySelector('#phone').value;
+        let userValidate= await loadDoc(`/expense_app/apifile.php?phone=${phone}&password=${pass}`);
+        let convertedData=JSON.parse(userValidate);
+        console.log(convertedData,convertedData?.length);
+       if(convertedData?.length>0){
+        console.log(convertedData)
+        localStorage.setItem('userId',convertedData[0]?.userId);
+        document.querySelector('.message').innerHTML="<b class='success'>Valide User</b>";
+
+        setTimeout(()=>{
+            window.location.assign('./');
+        },2000)
+       }else{
+        document.querySelector('.message').innerHTML="<b class='error'>InValide user</b>";
+       }
+    }
+    function loadDoc(url) {
+    return new Promise((res,rej)=>{
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url,true);
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                res(xhttp.responseText);
+            }
+        }
+        xhttp.send();
+    })
+
+}
+   </script>
+   <style>
+    .loginform{
+        border: 1px solid #ddd;
+        padding: 13px;
+        border-radius: 11px;
+    }
+   </style>
+   <body>
+      <center>
+         <h1>Login</h1>
+      </center>
+      <div class="container">
+        <div class="row">
+            <div class="col-md-4 ">
+    
+            </div>
+            <div class="col-md-4 col-sm-12 loginform">
+                <div class="form-group">
+                  <label for="Phone" >Phone number:</label>
+                  <input type="number" name="Phone" id="phone"  class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="Phone" >Password:</label>
+                    <input type="password" name="password" id="password"  class="form-control">
+                  </div>
+                  <button type="button" class="btn btn-default" onclick="loginAPI()">Login</button>
+               <br>
+               <div class="message">
+
+               </div>
+               <a href="./register.html">Register User</a>
+
+            </div>
+         </div>
+      </div>
+
+   </body>

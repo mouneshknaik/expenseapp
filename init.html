@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+</head>
+<body>
+<script type="text/javascript">
+	function loadcat(t){
+		console.log('changed',this,t);
+
+	}
+</script>
+<div id="demo"></div>
+</div>
+<script>
+	var userId=localStorage.getItem('userId');
+   async function load(){
+    let categoryList= await loadAPI("/expense_app/apifile.php?userId="+userId);
+    let list=JSON.parse(categoryList);
+	console.log(JSON.parse(categoryList),'sdf');
+	list.forEach(element => {
+		document.querySelector("#browsers").innerHTML+=`<option value="${element?.category}">`;
+	});
+   }
+   load();
+   async function loadtable(val){
+	console.log(val);
+	localStorage.setItem('category',val);
+	document.querySelector(".tbody").innerHTML="";
+    let tableList= await loadAPI("/expense_app/apifile.php?userId="+userId+"&category="+val);
+	console.log(document.querySelector(".tbody"));
+	let list=JSON.parse(tableList);
+	document.querySelector(".tbody").innerHTML+="<tr>";
+		let sumval=0.0;
+	list.forEach(element => {
+		sumval=sumval+parseFloat(element?.price);
+		document.querySelector(".tbody").innerHTML+=`
+		
+			<td>${element?.material}</td>
+			<td>${element?.unit}</td>
+			<td style="width:100px"><small>${new Date(element?.time).toLocaleString("en-US",{  year: "numeric",  month: "short",  day: "numeric",hour:'numeric',minute:'numeric'})}</small></td>
+			<td>${element?.price}</td>
+			<td><b><a href="./edit.php?id=${element?.id}">Edit</a></b></td>
+			<td><a href="./delete.php?id=${element?.id}" onclick="return confirm('Are you sure? to delete')">D</a></td>
+		`;
+	});
+	document.querySelector(".tbody").innerHTML+="</tr>";
+	document.querySelector(".tbody").innerHTML+=`<tr>
+		<td><b>Total</b></td>
+		<td></td>
+		<td></td>
+		<td><b>${sumval}</b></td>
+	</tr>`;
+	console.log(tableList);
+   }
+function loadAPI(url) {
+    return new Promise((res,rej)=>{
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url,true);
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                res(xhttp.responseText);
+            }
+        }
+        xhttp.send();
+    })
+
+}
+</script>
+
+<?php
+?>
+<div class="container">
+	<h4><a href="./addcat.html">Add Category</a></h4>
+	<input list="browsers" name="browser" id="browser" onchange="loadtable(value)">
+	<datalist id="browsers">
+	</datalist>
+	<h2><a href="./add.php">Add Expenses</a></h2>
+	
+	<table>
+		<head>
+			<tr>
+				<th>Matrial/Labour</th>
+				<th>Unit</th>
+				<th>Time</th>
+				<th>Price</th>
+				<th>Action</th>
+			</tr>
+		</head>
+		<!-- <tbody>
+			<?php foreach($tmp1 as $key=>$value){ ?>
+				<tr>
+					<td><?php echo ($value['material']); ?></td>
+					<td><?php echo ($value['unit']); ?></td>
+					<td><?php echo ($value['time']); ?></td>
+					<td><b><?php echo ($value['price']); ?></b></td>
+					<td><b><a href="./edit.php?id=<?php echo ($value['id']); ?>">Edit</a></b></td>
+					<td><a href="./delete.php?id=<?php echo ($value['id']); ?>" onclick="return confirm('Are you sure? to delete')">D</a></td>
+				</tr>
+			<?php } ?>
+		</tbody> -->
+		<tbody class="tbody">
+		</tbody>
+		<!-- <tbody>
+			<tr>
+				<td></td>
+			</tr>
+		</tbody> -->
+	</table>
+</div>
+
+</body>
+</html>

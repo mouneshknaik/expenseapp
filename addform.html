@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Construction cost</title>
+   </head>
+
+   <script>
+   window.addEventListener("load", function(){
+        var userId=localStorage.getItem('userId');
+        var cat=localStorage.getItem('category');
+        document.querySelector('#user').setAttribute('value',userId);
+        document.querySelector('#cat').setAttribute('value',cat);
+
+    })
+   </script>
+   <body>
+      <center>
+         <h1>add Form data in Database</h1>
+
+      </center>
+      <div class="container">
+         <div class="row">
+            <div class="col-md-4 ">
+    
+            </div>
+            <div class="col-md-4 col-sm-12">
+               <form action="update.php" method="post">
+                  <div class="form-group">
+                     <label for="Material">Material:</label>
+                     <input type="text" name="Material"   class="form-control" id="Material" >
+                  </div>
+                  <div class="form-group">
+                     <label for="Price">Price:</label>
+                     <input type="number" name="Price" id="Price" class="form-control">
+                  </div>
+                  <div class="form-group">
+                     <label for="Unit">Unit:</label>
+                     <input type="number" name="Unit" id="Unit" class="form-control">
+                     <input type="text" name="cat" id="cat" style="visibility: hidden;">
+                     <input type="number" name="user" id="user" style="visibility: hidden;">
+                  </div>
+                  <button type="submit" class="btn btn-default">Submit</button>
+               </form>
+               <br>
+               <a href='./' class="btn btn-default">Home</a>
+            </div>
+         </div>
+      </div>
+
+   </body>
