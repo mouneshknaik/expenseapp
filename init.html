@@ -3,32 +3,107 @@
 <head>
 	<title></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+	 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+	  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 </head>
+<style type="text/css">
+	.ui-datepicker-trigger{
+		width: 25px;
+	}
+</style>
 <body>
 <script type="text/javascript">
 	function loadcat(t){
 		console.log('changed',this,t);
 
 	}
+	$(document).ready(()=>{
+		$("#startDate" ).datepicker({
+
+	      showOn: "button",
+	      buttonImage: "images/cal.jpg",
+	      buttonImageOnly: true,
+	      buttonText: "Select date",
+	      dateFormat: 'yy-mm-dd',
+		onSelect: function(d,i) {
+ 			console.log('loaded',d,i);
+ 			localStorage.setItem('startDate',d);
+    	}
+    	});
+		$("#endDate" ).datepicker({
+	      showOn: "button",
+	      buttonImage: "images/cal.jpg",
+	      buttonImageOnly: true,
+	      buttonText: "Select date",
+	      dateFormat: 'yy-mm-dd',
+		onSelect: function(d,i) {
+ 			console.log('loaded',d,i);
+ 			localStorage.setItem('endDate',d);
+    	}
+    	});
+
+    })
+    function filter(){
+    		if(localStorage.getItem('startDate') && localStorage.getItem('endDate')){
+    			loadtable(localStorage.getItem('category'));
+    		}else{
+    			alert("Selct startDate and endDate");
+    		}
+    	}
+    function clear(){
+		localStorage.removeItem('startDate');
+		localStorage.removeItem('endDate');
+    }
+    function clearFilter(){
+    	clear();
+    	loadtable(localStorage.getItem('category'));
+    }
 </script>
+
 <div id="demo"></div>
 </div>
 <script>
 	var userId=localStorage.getItem('userId');
    async function load(){
+	 let total=await loadAPI("/expense_app/apifile.php?totalCountUser="+userId);
+	let totalList=JSON.parse(total);
+	document.querySelector(".totalTable").innerHTML+="<tr>";
+		let sumval=0.0;
+	totalList.forEach(element => {
+		sumval=sumval+parseFloat(element?.total);
+		document.querySelector(".totalTable").innerHTML+=`
+			<td>${element?.category} -</td>
+			<td>${element?.total}</td>
+		`;
+	});
+	document.querySelector(".totalTable").innerHTML+="</tr>";
+	document.querySelector(".totalTable").innerHTML+=`<tr>
+		<td><b>Total</b></td>
+		<td><b>${sumval}</b></td>
+	</tr>`;
+
     let categoryList= await loadAPI("/expense_app/apifile.php?userId="+userId);
     let list=JSON.parse(categoryList);
 	console.log(JSON.parse(categoryList),'sdf');
 	list.forEach(element => {
 		document.querySelector("#browsers").innerHTML+=`<option value="${element?.category}">`;
 	});
+	clear()
+	loadtable(list?.[0]?.category);
    }
    load();
    async function loadtable(val){
 	console.log(val);
 	localStorage.setItem('category',val);
 	document.querySelector(".tbody").innerHTML="";
-    let tableList= await loadAPI("/expense_app/apifile.php?userId="+userId+"&category="+val);
+	let url="/expense_app/apifile.php?userId="+userId+"&category="+val;
+	let startDate=localStorage.getItem('startDate');
+	let endDate=localStorage.getItem('endDate');
+	if(endDate){
+		url="/expense_app/apifile.php?userId="+userId+"&category="+val+"&startDate="+startDate+"&endDate="+endDate;
+	}
+    let tableList= await loadAPI(url);
 	console.log(document.querySelector(".tbody"));
 	let list=JSON.parse(tableList);
 	document.querySelector(".tbody").innerHTML+="<tr>";
@@ -72,12 +147,25 @@ function loadAPI(url) {
 <?php
 ?>
 <div class="container">
+	<h5><a href="./upload_app">Upload Slips</a></h5>
 	<h4><a href="./addcat.html">Add Category</a></h4>
 	<input list="browsers" name="browser" id="browser" onchange="loadtable(value)">
 	<datalist id="browsers">
 	</datalist>
 	<h2><a href="./add.php">Add Expenses</a></h2>
-	
+	<table>
+		<head>
+			<tr>
+				<th>Category </th>
+				<th>Expense </th>
+			</tr>
+		</head>
+		<tbody class="totalTable">
+			
+		</tbody>
+	</table>
+	<br>
+	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
 	<table>
 		<head>
 			<tr>
