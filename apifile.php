@@ -7,10 +7,10 @@ if(isset($_GET['userId'])){
     $sql = "SELECT * FROM category where userId=$_GET[userId]";
 }
 if(isset($_GET['category']) && isset($_GET['userId'])){
-    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]'";
+    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' ORDER by time DESC";
 }
 if(isset($_GET['category']) && isset($_GET['userId']) && isset($_GET['endDate'])){
-    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' and time> '$_GET[startDate]' and time<'$_GET[endDate]'";
+    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' and time> '$_GET[startDate]' and time<'$_GET[endDate]' ORDER by time DESC";
 }
 if(isset($_GET['phone']) && isset($_GET['password'])){
     $sql = "SELECT * FROM `user` WHERE phone='$_GET[phone]' and password='$_GET[password]'";
