@@ -6,9 +6,6 @@
 	 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 	  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-  <script src=
-  "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js">
-	  </script>
 </head>
 <style type="text/css">
 	.ui-datepicker-trigger{
@@ -47,12 +44,6 @@
     	});
 
     })
-	function dateConverter(dateString){
-		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		var d = new Date(dateString);
-		var dayName = days[d.getDay()];
-		return (dayName)+'('+new Date(dateString).toLocaleString("en-US",{  month: "short",  day: "numeric",hour:'numeric',minute:'numeric'})+')';
-	}
     function filter(){
     		if(localStorage.getItem('startDate') && localStorage.getItem('endDate')){
     			loadtable(localStorage.getItem('category'));
@@ -99,13 +90,17 @@
 		document.querySelector("#browsers").innerHTML+=`<option value="${element?.category}">`;
 	});
 	clear()
-	loadtable(list?.[0]?.category);
+	loadtable('Labour');
    }
-   load();
-   async function loadtable(val){
+//    load();
+loadtable('Labour');
+async function loadtable(val){
 	console.log(val);
 	localStorage.setItem('category',val);
-	document.querySelector(".tbody").innerHTML="";
+    if(document.querySelector(".tbody")){
+        document.querySelector(".tbody").innerHTML="";
+    }
+	// document.querySelector(".tbody").innerHTML="";
 	let url="/expense_app/apifile.php?userId="+userId+"&category="+val;
 	let startDate=localStorage.getItem('startDate');
 	let endDate=localStorage.getItem('endDate');
@@ -119,23 +114,15 @@
 		let sumval=0.0;
 	list.forEach(element => {
 		sumval=sumval+parseFloat(element?.price);
-		// document.querySelector(".tbody").innerHTML+=`
-		
-		// 	<td>${element?.material}</td>
-		// 	<td>${element?.unit}</td>
-		// 	<td style="width:100px"><small>${dateConverter(element?.time)}</small></td>
-		// 	<td>${element?.price}</td>
-		// 	<td><b><a href="./edit.php?id=${element?.id}">Edit</a></b></td>
-		// 	<td><a href="./delete.php?id=${element?.id}" onclick="return confirm('Are you sure? to delete')">D</a></td>
-		// `;
 		document.querySelector(".tbody").innerHTML+=`
-		<td style="width:100px"><small>${dateConverter(element?.time)}</small></td>
-		<td>${element?.material}</td>
-		<td>${element?.unit}</td>
-		<td>${element?.price}</td>
-		<td><b><a href="./edit.php?id=${element?.id}">Edit</a></b></td>
-		<td><a href="./delete.php?id=${element?.id}" onclick="return confirm('Are you sure? to delete')">D</a></td>
-	`;
+		
+			<td>${element?.material}</td>
+			<td>${element?.unit}</td>
+			<td style="width:100px"><small>${new Date(element?.time).toLocaleString("en-US",{  year: "numeric",  month: "short",  day: "numeric",hour:'numeric',minute:'numeric'})}</small></td>
+			<td>${element?.price}</td>
+			<td><b><a href="./edit.php?id=${element?.id}">Edit</a></b></td>
+			<td><a href="./delete.php?id=${element?.id}" onclick="return confirm('Are you sure? to delete')">D</a></td>
+		`;
 	});
 	document.querySelector(".tbody").innerHTML+="</tr>";
 	document.querySelector(".tbody").innerHTML+=`<tr>
@@ -159,69 +146,25 @@ function loadAPI(url) {
     })
 
 }
-function thisweek(){
-	// console.log(new Date(moment().endOf('week').valueOf()))
-	let tmp=new Date(new Date(moment().endOf('week').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"});
-	console.log(tmp);
-	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	filter();
-}
-
-function lastweek(){
-	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-
-	filter();
-}
-function dateformatreverse(dat){
-	// let dat=new Date(new Date(moment().startOf('week').subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"});
-	let date=dat.split('/');
-	return date[date.length-1]+'-'+date[0]+'-'+date[1];
-}
 </script>
 
 <?php
 ?>
 <div class="container">
-	<h5><a href="./upload_app">Upload Slips</a></h5>
-	<h4><a href="./addcat.html">Add Category</a></h4>
-	<input list="browsers" name="browser" id="browser" onchange="loadtable(value)">
-	<datalist id="browsers">
-	</datalist>
+	<!-- <h5><a href="./upload_app">Upload Slips</a></h5> -->
+	<!-- <h4><a href="./addcat.html">Add Category</a></h4> -->
+	<!-- <input list="browsers" name="browser" id="browser" onchange="loadtable(value)"> -->
+	<!-- <datalist id="browsers">
+	</datalist> -->
 	<h2><a href="./add.php">Add Expenses</a></h2>
+	<br>
+	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
 	<table>
 		<head>
 			<tr>
-				<th>Category </th>
-				<th>Expense </th>
-			</tr>
-		</head>
-		<tbody class="totalTable">
-			
-		</tbody>
-	</table>
-	<br>
-	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
-	<p><button  onclick="thisweek()">This Week</button> <button  onclick="lastweek()">last Week</button> </p>
-	
-	<table>
-		<head>
-			<!-- <tr>
 				<th>Matrial/Labour</th>
 				<th>Unit</th>
 				<th>Time</th>
-				<th>Price</th>
-				<th>Action</th>
-			</tr> -->
-			<tr>
-				<th>Time</th>
-				<th>Labour</th>
-				<th>Targar</th>
-				<th>Mestri</th>
-				<th>Bar Bending</th>
-				<th>Other</th>
-				<th>Unit</th>
 				<th>Price</th>
 				<th>Action</th>
 			</tr>
