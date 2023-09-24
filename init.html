@@ -14,6 +14,10 @@
 	.ui-datepicker-trigger{
 		width: 25px;
 	}
+	td, th{
+		padding: 4px;
+    	border: 1px solid #bdbdbd;
+	}
 </style>
 <body>
 <script type="text/javascript">
@@ -53,9 +57,15 @@
 		var dayName = days[d.getDay()];
 		return (dayName)+'('+new Date(dateString).toLocaleString("en-US",{  month: "short",  day: "numeric",hour:'numeric',minute:'numeric'})+')';
 	}
-    function filter(){
+	function dateDay(dateString){
+		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+		var d = new Date(dateString);
+		var dayName = days[d.getDay()];
+		return dayName;
+	}
+    function filter(weekly){
     		if(localStorage.getItem('startDate') && localStorage.getItem('endDate')){
-    			loadtable(localStorage.getItem('category'));
+    			loadtable(localStorage.getItem('category'),weekly);
     		}else{
     			alert("Selct startDate and endDate");
     		}
@@ -102,7 +112,7 @@
 	loadtable(list?.[0]?.category);
    }
    load();
-   async function loadtable(val){
+   async function loadtable(val,weekFlag){
 	console.log(val);
 	localStorage.setItem('category',val);
 	document.querySelector(".tbody").innerHTML="";
@@ -115,8 +125,13 @@
     let tableList= await loadAPI(url);
 	console.log(document.querySelector(".tbody"));
 	let list=JSON.parse(tableList);
+	console.log(list,'list')
 	document.querySelector(".tbody").innerHTML+="<tr>";
-		let sumval=0.0;
+	let sumval=0.0;
+	if(weekFlag){
+		list=mergeList(list);
+	}
+	console.log(list,'list')
 	list.forEach(element => {
 		sumval=sumval+parseFloat(element?.price);
 		// document.querySelector(".tbody").innerHTML+=`
@@ -144,8 +159,24 @@
 		<td></td>
 		<td><b>${sumval}</b></td>
 	</tr>`;
-	console.log(tableList);
+	// console.log(tableList);
    }
+function mergeList(obj){
+	obj=obj.map(ee=>{ee['day']=dateDay(ee['time']);return ee;});
+	newObj=[];
+	obj.forEach(e=>{
+		let obj={};
+		if(newObj.some(ee=>ee?.day==e?.day)){
+			let tmp=newObj.find(ee=>ee?.day==e?.day);
+			tmp['price']=parseFloat(tmp['price'])+parseFloat(e['price']);
+			tmp['unit']=(tmp['unit'])+' + '+(e['unit']);
+			tmp['material']=(tmp['material'])+' + '+(e['material']);
+		}else{
+			newObj.push(e);
+		}
+	});
+	return (newObj)	
+}
 function loadAPI(url) {
     return new Promise((res,rej)=>{
         var xhttp = new XMLHttpRequest();
@@ -165,12 +196,18 @@ function thisweek(){
 	console.log(tmp);
 	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
 	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	filter();
+	filter(true);
 }
 
 function lastweek(){
 	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
 	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
+
+	filter(true);
+}
+function thismonth(){
+	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('month').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
+	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('month').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
 
 	filter();
 }
@@ -203,18 +240,18 @@ function dateformatreverse(dat){
 	</table>
 	<br>
 	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
-	<p><button  onclick="thisweek()">This Week</button> <button  onclick="lastweek()">last Week</button> </p>
+	<p><button  onclick="thisweek()">This Week</button> <button  onclick="lastweek()">last Week</button> <button  onclick="thismonth()">This Month</button></p>
 	
 	<table>
 		<head>
-			<!-- <tr>
+			<tr>
+				<th>Time</th>
 				<th>Matrial/Labour</th>
 				<th>Unit</th>
-				<th>Time</th>
 				<th>Price</th>
 				<th>Action</th>
-			</tr> -->
-			<tr>
+			</tr>
+			<!-- <tr>
 				<th>Time</th>
 				<th>Labour</th>
 				<th>Targar</th>
@@ -224,7 +261,7 @@ function dateformatreverse(dat){
 				<th>Unit</th>
 				<th>Price</th>
 				<th>Action</th>
-			</tr>
+			</tr> -->
 		</head>
 		<!-- <tbody>
 			<?php foreach($tmp1 as $key=>$value){ ?>

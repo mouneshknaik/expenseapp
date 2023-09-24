@@ -10,7 +10,7 @@ if(isset($_POST['category'])){
     $sql = "INSERT INTO `user`(`name`, `phone`, `password`,`userId`) VALUES ('".$_POST['name']."',".$_POST['phone'].",'".$_POST['password']."',".$randomUserid.")";
   }else{
     if(isset($_POST['id'])){
-      $sql = "UPDATE expenses SET material='".$_POST['Material']."',price='".$_POST['Price']."',unit='".$_POST['Unit']."' WHERE id='".$_POST['id']."'";
+      $sql = "UPDATE expenses SET material='".$_POST['Material']."',price='".$_POST['Price']."',unit='".$_POST['Unit']."',time='".$_POST['time']."' WHERE id='".$_POST['id']."'";
     }else{
       $sql = "INSERT INTO `expenses`(`material`, `price`, `unit`,`userId`,`category`) VALUES ('".$_POST['Material']."',".$_POST['Price'].",".$_POST['Unit'].",".$_POST['user'].",'".$_POST['cat']."')";
     }
