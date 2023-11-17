@@ -194,27 +194,31 @@ function thisweek(){
 	// console.log(new Date(moment().endOf('week').valueOf()))
 	let tmp=new Date(new Date(moment().endOf('week').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"});
 	console.log(tmp);
-	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
+	localStorage.setItem('startDate',dateformatreverse(moment().startOf('week').add('d',1).valueOf()));
+	localStorage.setItem('endDate',dateformatreverse(moment().endOf('week').add('d',1).valueOf()));
 	filter(true);
 }
 
 function lastweek(){
-	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('week').add('d',1).subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
+	localStorage.setItem('startDate',dateformatreverse(moment().startOf('week').add('d',1).subtract(7,'days').valueOf()));
+	localStorage.setItem('endDate',dateformatreverse(moment().endOf('week').add('d',1).subtract(7,'days').valueOf()));
 
 	filter(true);
 }
 function thismonth(){
-	localStorage.setItem('startDate',dateformatreverse(new Date(new Date(moment().startOf('month').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
-	localStorage.setItem('endDate',dateformatreverse(new Date(new Date(moment().endOf('month').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"})));
+	localStorage.setItem('startDate',dateformatreverse(moment().startOf('month').valueOf()));
+	localStorage.setItem('endDate',dateformatreverse(moment().endOf('month').valueOf()));
 
 	filter();
 }
 function dateformatreverse(dat){
+	// console.log(dat);
+	let tmp=new Date(dat);
+	// console.log(tmp.getMonth(),tmp.getDate());
 	// let dat=new Date(new Date(moment().startOf('week').subtract(7,'days').valueOf())).toLocaleString("arn-CL",{  year:'numeric',month: "numeric",  day: "numeric"});
-	let date=dat.split('/');
-	return date[date.length-1]+'-'+date[0]+'-'+date[1];
+	// let date=dat.split('/');
+	console.log(tmp,'tmp');
+	return tmp.getFullYear()+'-'+((tmp.getMonth()>=9?(tmp.getMonth()+1):('0'+(tmp.getMonth()+1))))+'-'+tmp.getDate();
 }
 </script>
 
