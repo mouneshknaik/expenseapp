@@ -18,6 +18,13 @@
 		padding: 4px;
     	border: 1px solid #bdbdbd;
 	}
+	.loading {
+    	color: red;
+	}
+	.show{
+		visibility: visible !important;
+		height: 1000px !important;
+	}
 </style>
 <body>
 <script type="text/javascript">
@@ -114,6 +121,7 @@
    load();
    async function loadtable(val,weekFlag){
 	console.log(val);
+	document.querySelector(".loading").innerHTML="Loading...!";
 	localStorage.setItem('category',val);
 	document.querySelector(".tbody").innerHTML="";
 	let url="/expense_app/apifile.php?userId="+userId+"&category="+val;
@@ -123,9 +131,14 @@
 		url="/expense_app/apifile.php?userId="+userId+"&category="+val+"&startDate="+startDate+"&endDate="+endDate;
 	}
     let tableList= await loadAPI(url);
+	document.querySelector(".loading").innerHTML="";
 	console.log(document.querySelector(".tbody"));
 	let list=JSON.parse(tableList);
-	console.log(list,'list')
+	let tmplist=JSON.parse(JSON.stringify(list));
+	tmplist=tmplist.sort((a,b)=>new Date(a?.time).getTime()-new Date(b?.time).getTime());
+	let chartLabel=tmplist.map(ele=>ele?.material);
+	let chartData=tmplist.map(ele=>ele?.price);
+	chartplot(chartLabel,chartData);
 	document.querySelector(".tbody").innerHTML+="<tr>";
 	let sumval=0.0;
 	if(weekFlag){
@@ -211,6 +224,10 @@ function thismonth(){
 
 	filter();
 }
+function chartshow(){
+	document.getElementById('container').classList.toggle("show");
+	// load();
+}
 function dateformatreverse(dat){
 	// console.log(dat);
 	let tmp=new Date(dat);
@@ -221,6 +238,7 @@ function dateformatreverse(dat){
 	return tmp.getFullYear()+'-'+((tmp.getMonth()>=9?(tmp.getMonth()+1):('0'+(tmp.getMonth()+1))))+'-'+tmp.getDate();
 }
 </script>
+<script type="text/javascript" src="echart.js"></script>
 
 <?php
 ?>
@@ -244,8 +262,13 @@ function dateformatreverse(dat){
 	</table>
 	<br>
 	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
-	<p><button  onclick="thisweek()">This Week</button> <button  onclick="lastweek()">last Week</button> <button  onclick="thismonth()">This Month</button></p>
-	
+	<p><button  onclick="thisweek()">This Week</button>
+		 <button  onclick="lastweek()">last Week</button> 
+		 <button  onclick="thismonth()">This Month</button>
+		 <button  onclick="chartshow()">chart show</button>
+		</p>
+	<div id="container" style="height: 1000px;visibility: hidden;    height: 0;"></div>
+	<div class="loading"></div>
 	<table>
 		<head>
 			<tr>
@@ -288,6 +311,84 @@ function dateformatreverse(dat){
 		</tbody> -->
 	</table>
 </div>
+<script type="text/javascript">
+	$(document).ready(()=>{
+		let label=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+		let data=[120, 200, 150, 80, 70, 110, 130];
+		// chartplot(label,data);
+	});
+  function chartplot(label,data){
+	var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
 
+    option = {
+		dataset: {
+    source: form(label,data)
+  },
+  grid: { containLabel: true },
+  xAxis: { name: 'amount' },
+  yAxis: { type: 'category' },
+  tooltip: {
+    trigger: 'item'
+  },
+  visualMap: {
+    orient: 'horizontal',
+    left: 'center',
+    min: 10,
+    max: 100,
+    text: ['High Score', 'Low Score'],
+    // Map the score column to color
+    dimension: 0,
+    inRange: {
+      color: ['#65B581', '#FFCE34', '#FD665F']
+    }
+  },
+  series: [
+    {
+      type: 'bar',
+      encode: {
+        // Map the "amount" column to X axis.
+        x: 'amount',
+        // Map the "product" column to Y axis
+        y: 'product'
+      }
+    }
+  ]
+	};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  }
+  function form(label,data){
+			let list=[];
+			let large=largest(data);
+			console.log(large);
+			list.push(['score', 'amount', 'product']);
+
+			label.forEach((ele,i)=>{
+				console.log(ele,i);
+				list.push([((data[i]/large)*100).toFixed(),data[i],ele])
+			});
+			return(list);
+		}
+		function largest(arr){
+			var largest = parseFloat(arr[0]);
+			for (var i = 0; i < arr.length; i++) {
+			  if (parseFloat(arr[i]) > largest ) {
+			    largest = parseFloat(arr[i]);
+			  }
+			}
+			return largest;
+		}
+  </script>
 </body>
 </html>
