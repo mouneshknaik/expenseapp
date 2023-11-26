@@ -72,10 +72,16 @@
 		return dayName;
 	}
     function filter(weekly){
+    		let search =document.querySelector('#search').value;
+    		console.log(search,'search')
     		if(localStorage.getItem('startDate') && localStorage.getItem('endDate')){
     			loadtable(localStorage.getItem('category'),weekly);
     		}else{
-    			alert("Selct startDate and endDate");
+    			if(search){
+    				searchFilter(search);
+    			}else{
+    				alert("Selct startDate and endDate");
+    			}
     		}
     	}
     function clear(){
@@ -119,8 +125,10 @@
 	clear()
 	loadtable(list?.[0]?.category);
    }
-
-   async function loadtable(val,weekFlag){
+ 	function searchFilter(val){
+   	loadtable(localStorage.getItem('category'),'',val);
+   }
+   async function loadtable(val,weekFlag,searchFilter){
 	console.log(val);
 	document.querySelector(".loading").innerHTML="Loading...!";
 	localStorage.setItem('category',val);
@@ -130,6 +138,9 @@
 	let endDate=localStorage.getItem('endDate');
 	if(endDate){
 		url="/expense_app/apifile.php?userId="+userId+"&category="+val+"&startDate="+startDate+"&endDate="+endDate;
+	}
+	if(searchFilter){
+		url="/expense_app/apifile.php?userId="+userId+"&category="+val+"&search="+searchFilter;
 	}
     let tableList= await loadAPI(url);
 	document.querySelector(".loading").innerHTML="";
@@ -146,8 +157,10 @@
 		list=mergeList(list);
 	}
 	console.log(list,'list')
+	let totalunit=0;
 	list.forEach(element => {
 		sumval=sumval+parseFloat(element?.price);
+		totalunit=totalunit+parseInt(element?.unit);
 		// document.querySelector(".tbody").innerHTML+=`
 		
 		// 	<td>${element?.material}</td>
@@ -170,7 +183,7 @@
 	document.querySelector(".tbody").innerHTML+=`<tr>
 		<td><b>Total</b></td>
 		<td></td>
-		<td></td>
+		<td><b>${totalunit}</b></td>
 		<td><b>${sumval}</b></td>
 	</tr>`;
 	// console.log(tableList);
@@ -262,7 +275,9 @@ function dateformatreverse(dat){
 		</tbody>
 	</table>
 	<br>
-	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> <button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
+	<p><input type="text" id="startDate" placeholder="Start Date"> <input type="text" id="endDate" placeholder="End Date"> 
+		<input type="text" name="search" id="search">
+		<button onclick="filter()">Filter</button><button onclick="clearFilter()"> X</button></p>
 	<p><button  onclick="thisweek()">This Week</button>
 		 <button  onclick="lastweek()">last Week</button> 
 		 <button  onclick="thismonth()">This Month</button>

@@ -7,7 +7,7 @@ if(isset($_GET['userId'])){
     $sql = "SELECT * FROM category where userId=$_GET[userId]";
 }
 if(isset($_GET['category']) && isset($_GET['userId'])){
-    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' ORDER by time DESC";
+    $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' ORDER by time desc";
 }
 if(isset($_GET['category']) && isset($_GET['userId']) && isset($_GET['endDate'])){
     $sql = "SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]' and time> '$_GET[startDate]' and time<'$_GET[endDate]' ORDER by time DESC";
@@ -18,7 +18,9 @@ if(isset($_GET['phone']) && isset($_GET['password'])){
 if(isset($_GET['totalCountUser'])){
 	$sql ="SELECT category,SUM(price) as total FROM `expenses` WHERE userId='$_GET[totalCountUser]' GROUP BY category";
 }
-
+if(isset($_GET['search'])){
+	$sql ="SELECT * FROM expenses where userId=$_GET[userId] and category='$_GET[category]'  and material like '%$_GET[search]%' ORDER by time desc";
+}
 $result = mysqli_query($conn, $sql);
 
 // Fetch all
