@@ -33,6 +33,7 @@
 
 	}
 	$(document).ready(()=>{
+		load();
 		$("#startDate" ).datepicker({
 
 	      showOn: "button",
@@ -118,7 +119,7 @@
 	clear()
 	loadtable(list?.[0]?.category);
    }
-   load();
+
    async function loadtable(val,weekFlag){
 	console.log(val);
 	document.querySelector(".loading").innerHTML="Loading...!";
@@ -267,7 +268,7 @@ function dateformatreverse(dat){
 		 <button  onclick="thismonth()">This Month</button>
 		 <button  onclick="chartshow()">chart show</button>
 		</p>
-	<div id="container" style="height: 1000px;visibility: hidden;    height: 0;"></div>
+
 	<div class="loading"></div>
 	<table>
 		<head>
@@ -390,5 +391,6 @@ function dateformatreverse(dat){
 			return largest;
 		}
   </script>
+  	<div id="container" style="height: 1000px;"></div>
 </body>
 </html>
